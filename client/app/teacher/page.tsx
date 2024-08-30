@@ -1,6 +1,6 @@
 export default function Dashboard() {
   return (
-    <div className="h-fit p-5">
+    <div className="p-6 min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
       <p className="text-lg mb-4">
         Welcome to your dashboard. Here you can view your key metrics, recent

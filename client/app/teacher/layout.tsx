@@ -1,6 +1,6 @@
-import Sidebar from "@/components/student/Sidebar";
+import Sidebar from "@/components/teacher/Sidebar";
 
-export default function StudentLayout({ children }: any) {
+export default function TeacherLayout({ children }: any) {
   return (
     <div className="flex min-h-screen">
       <Sidebar />

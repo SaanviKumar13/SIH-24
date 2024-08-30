@@ -1,8 +1,20 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [role, setRole] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+
+    if (role) {
+      router.push(`/${role.toLowerCase()}`);
+    } else {
+      alert("Please select a role.");
+    }
+  };
 
   return (
     <div className="flex flex-col place-items-center md:flex-row min-h-screen bg-primary">
@@ -17,7 +29,7 @@ export default function LoginPage() {
         </h2>
         <div className="md:w-[30vw] md:h-[50vh] w-full flex items-center justify-center rounded-lg bg-white shadow-md p-5">
           <div className="w-full max-w-md">
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-6">
                 <p className="text-sm font-medium text-gray-600">Select Role</p>
                 <div className="flex flex-wrap md:flex-row justify-start gap-3 md:gap-5 mt-4">

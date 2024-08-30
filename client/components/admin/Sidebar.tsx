@@ -1,15 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import {
-  Menu,
-  X,
-  UserCircle2Icon,
-  BotMessageSquare,
-  CalendarDays,
-  BookCheck,
-} from "lucide-react";
+import { Menu, X, UserCircle2Icon } from "lucide-react";
 import { ReactNode } from "react";
-import { Calendar, Book, Users } from "lucide-react";
+import { Calendar, Book, Clipboard, Users } from "lucide-react";
 
 export type SidebarItem = {
   label: string;
@@ -19,29 +12,24 @@ export type SidebarItem = {
 
 export const sidebarItems: SidebarItem[] = [
   {
-    label: "Schedule",
-    icon: <CalendarDays size={24} />,
-    href: "/student/schedule",
-  },
-  {
     label: "Attendance",
     icon: <Calendar size={24} />,
-    href: "/student/attendance",
+    href: "#",
   },
   {
     label: "Labs",
     icon: <Book size={24} />,
-    href: "/student/labs",
+    href: "#",
   },
   {
     label: "Marks",
-    icon: <BookCheck size={24} />,
-    href: "/student/marks",
+    icon: <Clipboard size={24} />,
+    href: "#",
   },
   {
-    label: "Learnabot",
-    icon: <BotMessageSquare size={24} />,
-    href: "/student/ailearn",
+    label: "Teachers Connect",
+    icon: <Users size={24} />,
+    href: "#",
   },
 ];
 
@@ -75,7 +63,7 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between p-4">
           {isOpen ? (
-            <span className="text-2xl text-center font-bold text-primary md:text-4xl">
+            <span className="text-2xl font-bold text-primary md:text-4xl">
               SIH'24
             </span>
           ) : (
@@ -105,7 +93,7 @@ export default function Sidebar() {
             <a
               key={item.label}
               href={item.href}
-              className={`flex items-center px-4 py-2 gap-3 rounded-l-md text-white transition-colors duration-300 ${
+              className={`flex items-center px-4 py-2 gap-3 rounded-md text-white transition-colors duration-300 ${
                 isOpen
                   ? "group hover:bg-secondary hover:text-white"
                   : "group hover:bg-primary hover:text-secondary"
