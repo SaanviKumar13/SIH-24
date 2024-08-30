@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Menu, X, UserCircle2Icon } from "lucide-react";
+import { Menu, X, UserCircle2Icon, ChartLine, Bolt } from "lucide-react";
 import { ReactNode } from "react";
 import { Calendar, Book, Clipboard, Users } from "lucide-react";
 
@@ -12,24 +12,19 @@ export type SidebarItem = {
 
 export const sidebarItems: SidebarItem[] = [
   {
-    label: "Attendance",
+    label: "User Permissions",
     icon: <Calendar size={24} />,
-    href: "#",
+    href: "/admin/permissions",
   },
   {
-    label: "Labs",
-    icon: <Book size={24} />,
-    href: "#",
+    label: "Config",
+    icon: <Bolt size={24} />,
+    href: "/admin/config",
   },
   {
-    label: "Marks",
-    icon: <Clipboard size={24} />,
-    href: "#",
-  },
-  {
-    label: "Teachers Connect",
-    icon: <Users size={24} />,
-    href: "#",
+    label: "Analytics",
+    icon: <ChartLine size={24} />,
+    href: "/admin/analytics",
   },
 ];
 
