@@ -14,22 +14,17 @@ export const sidebarItems: SidebarItem[] = [
   {
     label: "Attendance",
     icon: <Calendar size={24} />,
-    href: "#",
+    href: "/teacher/attendance",
   },
   {
-    label: "Labs",
+    label: "Performance Tracking",
     icon: <Book size={24} />,
-    href: "#",
+    href: "/teacher/performance",
   },
   {
-    label: "Marks",
-    icon: <Clipboard size={24} />,
-    href: "#",
-  },
-  {
-    label: "Teachers Connect",
+    label: "Resource Management",
     icon: <Users size={24} />,
-    href: "#",
+    href: "/teacher/manage-resource",
   },
 ];
 
@@ -93,7 +88,7 @@ export default function Sidebar() {
             <a
               key={item.label}
               href={item.href}
-              className={`flex items-center px-4 py-2 gap-3 rounded-md text-white transition-colors duration-300 ${
+              className={`flex items-center px-4 py-2 gap-3 rounded-l-md text-white transition-colors duration-300 ${
                 isOpen
                   ? "group hover:bg-secondary hover:text-white"
                   : "group hover:bg-primary hover:text-secondary"
