@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, UserCircle2Icon } from "lucide-react";
 import { ReactNode } from "react";
 import { Calendar, Book, Clipboard, Users } from "lucide-react";
@@ -34,57 +34,97 @@ export const sidebarItems: SidebarItem[] = [
 ];
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsOpen(window.innerWidth >= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <div
-      className={`fixed top-0 left-0 h-full transition-transform duration-300 px-3 ${
-        isOpen ? "w-64" : "w-20"
-      } bg-primary text-white shadow-lg z-50`}
-    >
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-primary">
-        <span className="text-4xl font-bold text-secondary">SIH'24</span>
-        <button
-          className="text-white md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 z-40 md:hidden"
+          onClick={() => setIsOpen(false)}
+        ></div>
+      )}
+
       <div
-        className={`flex flex-col mt-10 space-y-4 md:space-y-6 md:mt-8 md:pl-4 transition-transform duration-300 ${
-          isOpen ? "opacity-100" : "opacity-0"
+        className={`fixed top-0 left-0 h-full transition-transform duration-300 ${
+          isOpen ? "w-64 bg-primary shadow-lg" : "w-20"
+        } text-white z-50 md:w-64 md:bg-primary md:shadow-lg ${
+          isOpen ? "md:block" : "md:hidden"
         }`}
       >
-        {sidebarItems.map((item) => (
-          <a
-            key={item.label}
-            href={item.href}
-            className={`flex items-center px-3 py-2 gap-2 rounded-md text-black transition-colors ${
-              isOpen
-                ? "group hover:bg-secondary hover:text-white"
-                : "hover:bg-primary hover:text-secondary"
-            }`}
-          >
-            {item.icon}
-            {isOpen && (
-              <span className="text-lg font-medium">{item.label}</span>
-            )}
-          </a>
-        ))}
-      </div>
-      <div className="absolute bottom-4 w-full flex items-center justify-start px-10">
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-black hover:text-secondary"
+        <div className="flex items-center justify-between p-4">
+          {isOpen ? (
+            <span className="text-2xl font-bold text-secondary md:text-4xl">
+              SIH'24
+            </span>
+          ) : (
+            <button
+              className="text-white md:hidden"
+              onClick={() => setIsOpen(true)}
+            >
+              <Menu size={24} className="text-secondary" />
+            </button>
+          )}
+          {isOpen && (
+            <button
+              className="text-secondary md:hidden"
+              onClick={() => setIsOpen(false)}
+            >
+              <X size={24} className="text-secondary" />
+            </button>
+          )}
+        </div>
+
+        <div
+          className={`flex flex-col mt-6 space-y-4 md:space-y-6 md:mt-8 md:pl-4 transition-transform duration-300 ${
+            isOpen ? "opacity-100" : "opacity-0"
+          }`}
         >
-          <UserCircle2Icon
-            size={24}
-            className="text-black hover:text-secondary"
-          />
-          {isOpen && <span className="text-lg font-medium">Profile</span>}
-        </a>
+          {sidebarItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              className={`flex items-center px-4 py-2 gap-3 rounded-md text-black transition-colors duration-300 ${
+                isOpen
+                  ? "group hover:bg-secondary hover:text-white"
+                  : "group hover:bg-primary hover:text-secondary"
+              }`}
+            >
+              {item.icon}
+              {isOpen && (
+                <span className="text-sm md:text-lg font-medium">
+                  {item.label}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+        {isOpen && (
+          <div className="absolute bottom-4 w-full px-4 md:px-6 flex justify-start">
+            <a
+              href="#"
+              className="flex items-center space-x-2 text-black hover:text-secondary"
+            >
+              <UserCircle2Icon
+                size={24}
+                className="text-black hover:text-secondary"
+              />
+              {isOpen && (
+                <span className="text-sm md:text-lg font-medium">Profile</span>
+              )}
+            </a>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }
