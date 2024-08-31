@@ -20,7 +20,7 @@ export default function LoginPage() {
     <div className="flex flex-col place-items-center md:flex-row min-h-screen bg-primary">
       <div className="md:w-[60vw] w-full flex items-start justify-center pt-12 md:pt-0 p-8">
         <h1 className="text-4xl md:text-6xl font-bold text-secondary">
-          SIH'24
+          SIH&apos;24
         </h1>
       </div>
       <div>

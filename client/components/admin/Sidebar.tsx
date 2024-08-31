@@ -59,7 +59,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-between p-4">
           {isOpen ? (
             <span className="text-2xl font-bold text-primary md:text-4xl">
-              SIH'24
+              SIH&apos;24
             </span>
           ) : (
             <button

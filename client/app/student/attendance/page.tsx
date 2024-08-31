@@ -51,7 +51,9 @@ export default function Attendance() {
       <div className="w-full md:w-[60vw] flex flex-col md:flex-row items-center justify-between gap-8 mb-8">
         <div className="w-full md:w-[30%] h-[10vw] bg-white rounded-lg shadow-md p-5">
           <div className="flex flex-col items-center">
-            <p className="text-lg font-medium text-gray-600">Today's Date</p>
+            <p className="text-lg font-medium text-gray-600">
+              Today&apos;s Date
+            </p>
             <p className="text-xl font-bold text-secondary">
               {attendance.today.date}
             </p>

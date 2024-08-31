@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import Image from "next/image";
 
 const labsData = [
   {
@@ -39,9 +40,11 @@ export default function LabsShowcase() {
             <ChevronLeftIcon className="w-8 h-8 text-secondary" />
           </button>
           <div className="text-center p-4">
-            <img
+            <Image
               src={labsData[currentIndex].image}
               alt={labsData[currentIndex].title}
+              width={300}
+              height={200}
               className="w-full h-64 object-cover rounded-lg mb-4"
             />
             <h2 className="text-2xl font-bold text-secondary">
