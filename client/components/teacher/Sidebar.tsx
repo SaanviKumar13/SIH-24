@@ -1,8 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Menu, X, UserCircle2Icon } from "lucide-react";
+import { Menu, X, UserCircle2Icon, Calendar, Book, Users } from "lucide-react";
 import { ReactNode } from "react";
-import { Calendar, Book, Clipboard, Users } from "lucide-react";
 
 export type SidebarItem = {
   label: string;
@@ -29,17 +28,23 @@ export const sidebarItems: SidebarItem[] = [
 ];
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+
     const handleResize = () => {
       setIsOpen(window.innerWidth >= 768);
     };
+
+    handleResize();
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  if (!mounted) return null;
   return (
     <>
       {isOpen && (
