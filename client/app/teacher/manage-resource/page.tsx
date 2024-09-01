@@ -1,148 +1,234 @@
 "use client";
 
-import { useState } from "react";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Modal, Form, Input, Radio, Button } from "antd";
 import toast from "react-hot-toast";
-import { CalendarIcon, CheckCircle, ClockIcon } from "lucide-react";
 
-const ITEM_TYPE = "RESOURCE";
-
-interface Resource {
-  id: string;
-  name: string;
-  type: string;
-  color: string;
-}
-
-const resources: Resource[] = [
-  { id: "1", name: "Math Class", type: "Class", color: "bg-blue-100" },
-  { id: "2", name: "Science Exam", type: "Exam", color: "bg-red-100" },
-  {
-    id: "3",
-    name: "Art Project Deadline",
-    type: "Deadline",
-    color: "bg-yellow-100",
-  },
-];
+const { Group: RadioGroup, Button: RadioButton } = Radio;
 
 interface Event {
   id: string;
   title: string;
   start: string;
-  extendedProps: { type: string; color: string };
+  end: string;
+  type: string;
+  teacher: string;
+  lab: string;
+  color: string;
 }
 
-export default function ResourceScheduler() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [draggedResource, setDraggedResource] = useState<Resource | null>(null);
+const eventTypeColors: { [key: string]: string } = {
+  Class: "#4a90e2",
+  Extracurricular: "#f5a623",
+  Lab: "#7ed321",
+  Other: "#d0021b",
+};
 
-  const handleOnDragEnd = (result: any) => {
-    if (!result.destination || !draggedResource) {
-      return;
-    }
+const initialEvents: Event[] = [];
 
-    const start = result.destination.droppableId;
+const ResourceManager = () => {
+  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleEventDrop = (info: any) => {
+    const updatedEvent = {
+      id: info.event.id,
+      title: info.event.title,
+      start: info.event.startStr,
+      end: info.event.endStr,
+      type: info.event.extendedProps.type,
+      teacher: info.event.extendedProps.teacher,
+      lab: info.event.extendedProps.lab,
+      color: info.event.extendedProps.color,
+    };
+
     const isConflict = events.some(
       (event) =>
-        event.start === start &&
-        event.extendedProps.type !== draggedResource.type
+        event.start < updatedEvent.end &&
+        event.end > updatedEvent.start &&
+        event.id !== updatedEvent.id
     );
 
     if (isConflict) {
-      toast.error("Conflict detected! Cannot place this resource here.");
+      toast.error("Conflict detected! Cannot place this event here.");
     } else {
-      setEvents((prev) => [
-        ...prev,
-        {
-          id: draggedResource.id,
-          title: draggedResource.name,
-          start: start,
-          extendedProps: {
-            type: draggedResource.type,
-            color: draggedResource.color,
-          },
-        },
-      ]);
+      setEvents((prev) => {
+        if (!prev) return [updatedEvent];
+        return [...prev.filter((e) => e.id !== updatedEvent.id), updatedEvent];
+      });
+      toast.success("Event updated successfully.");
     }
-
-    setDraggedResource(null);
   };
 
-  const handleDragStart = (start: any) => {
-    const resource = resources.find((r) => r.id === start.draggableId);
-    setDraggedResource(resource || null);
+  const handleSelectSlot = (info: any) => {
+    setSelectedEvent({
+      id: `${Date.now()}`,
+      title: "",
+      start: info.startStr,
+      end: info.endStr,
+      type: "Class",
+      teacher: "",
+      lab: "",
+      color: eventTypeColors["Class"],
+    });
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    if (selectedEvent) {
+      setEvents((prev) => {
+        if (!prev) return [selectedEvent];
+        return [...prev, selectedEvent];
+      });
+      toast.success("Event added successfully.");
+    }
+    setIsModalVisible(false);
+    setSelectedEvent(null);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedEvent(null);
+  };
+
+  const handleFormChange = (changedValues: any) => {
+    if (selectedEvent) {
+      const updatedEvent: Event = {
+        ...selectedEvent,
+        ...changedValues,
+        color: eventTypeColors[changedValues.type] || selectedEvent.color,
+      };
+      setSelectedEvent(updatedEvent);
+    }
   };
 
   const eventContent = (eventInfo: any) => {
-    const { type, color } = eventInfo.event.extendedProps;
+    const { event } = eventInfo;
+    const { extendedProps } = event;
     return (
-      <div className={`flex items-center space-x-2 p-1 rounded-md ${color}`}>
-        {type === "Class" && <CalendarIcon className="w-4 h-4" />}
-        {type === "Exam" && <CheckCircle className="w-4 h-4" />}
-        {type === "Deadline" && <ClockIcon className="w-4 h-4" />}
-        <span>{eventInfo.event.title}</span>
+      <div className="flex items-center">
+        <div
+          className="w-3 h-3 mr-2"
+          style={{ backgroundColor: extendedProps.color }}
+        ></div>
+        <span>{event.title}</span>
+        <span className="ml-2 text-sm text-gray-600">
+          ({extendedProps.teacher}, {extendedProps.lab})
+        </span>
       </div>
     );
   };
 
-  return (
-    <DragDropContext onDragEnd={handleOnDragEnd} onDragStart={handleDragStart}>
-      <div className="min-h-screen bg-primary p-8">
-        <h1 className="text-4xl font-bold text-secondary mb-6">
-          Classroom Scheduler
-        </h1>
-        <div className="flex space-x-4">
-          <Droppable droppableId="resources" type={ITEM_TYPE}>
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="w-1/3 p-4 bg-white rounded-lg shadow-md"
-              >
-                <h2 className="text-xl font-bold mb-4">Resources</h2>
-                {resources.map((resource, index) => (
-                  <Draggable
-                    key={resource.id}
-                    draggableId={resource.id}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`p-2 rounded mb-2 ${resource.color}`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span>{resource.name}</span>
-                        </div>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+  const typeSelectRender = () => {
+    return Object.entries(eventTypeColors).map(([type, color]) => (
+      <RadioButton
+        key={type}
+        value={type}
+        style={{
+          backgroundColor: color,
+          borderRadius: "4px",
+          color: "#fff",
+          margin: "0 8px 8px 0",
+        }}
+      >
+        {type}
+      </RadioButton>
+    ));
+  };
 
-          <div className="w-2/3 p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Calendar</h2>
-            <FullCalendar
-              plugins={[dayGridPlugin, interactionPlugin]}
-              initialView="dayGridMonth"
-              events={events}
-              eventContent={eventContent}
-              editable={true}
-              droppable={true}
-              selectable={true}
-              drop={handleOnDragEnd}
-            />
-          </div>
-        </div>
+  return (
+    <div className="min-h-screen p-8">
+      <h1 className="text-4xl font-bold text-blue-600 mb-6">
+        Resource Manager
+      </h1>
+      <div className="w-full p-4 bg-white rounded-lg shadow-md">
+        <h2 className="text-xl font-bold mb-4">Weekly Calendar</h2>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="timeGridWeek"
+          events={events.map((event) => ({
+            id: event.id,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            extendedProps: {
+              type: event.type,
+              teacher: event.teacher,
+              lab: event.lab,
+              color: event.color,
+            },
+            backgroundColor: event.color,
+          }))}
+          editable={true}
+          selectable={true}
+          select={handleSelectSlot}
+          eventDrop={handleEventDrop}
+          eventResize={handleEventDrop}
+          eventContent={eventContent}
+        />
       </div>
-    </DragDropContext>
+
+      <Modal
+        title="Add Event"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Save"
+        cancelText="Cancel"
+      >
+        <Form
+          layout="vertical"
+          onValuesChange={handleFormChange}
+          initialValues={selectedEvent || {}}
+        >
+          <Form.Item
+            name="title"
+            label="Event Name"
+            rules={[
+              { required: true, message: "Please enter the event name!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="type"
+            label="Event Type"
+            rules={[
+              { required: true, message: "Please select the event type!" },
+            ]}
+          >
+            <RadioGroup
+              onChange={(e) => handleFormChange({ type: e.target.value })}
+              value={selectedEvent?.type}
+            >
+              {typeSelectRender()}
+            </RadioGroup>
+          </Form.Item>
+          <Form.Item
+            name="teacher"
+            label="Teacher Name"
+            rules={[
+              { required: true, message: "Please enter the teacher name!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="lab"
+            label="Lab Name"
+            rules={[{ required: true, message: "Please enter the lab name!" }]}
+          >
+            <Input />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </div>
   );
-}
+};
+
+export default ResourceManager;
