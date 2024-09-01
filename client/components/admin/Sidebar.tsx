@@ -9,6 +9,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { ReactNode } from "react";
+import Link from "next/link";
 export type SidebarItem = {
   label: string;
   icon: ReactNode;
@@ -69,9 +70,12 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between p-4">
           {isOpen ? (
-            <span className="text-2xl font-bold text-primary md:text-4xl">
+            <Link
+              href="/"
+              className="text-2xl font-bold text-primary md:text-4xl"
+            >
               SIH&apos;24
-            </span>
+            </Link>
           ) : (
             <button
               className="text-white md:hidden"
@@ -96,7 +100,7 @@ export default function Sidebar() {
           }`}
         >
           {sidebarItems.map((item) => (
-            <a
+            <Link
               key={item.label}
               href={item.href}
               className={`flex items-center px-4 py-2 gap-3 rounded-md text-white transition-colors duration-300 ${
@@ -111,7 +115,7 @@ export default function Sidebar() {
                   {item.label}
                 </span>
               )}
-            </a>
+            </Link>
           ))}
         </div>
         {isOpen && (
