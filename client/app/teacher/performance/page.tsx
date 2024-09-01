@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bar, Line, Pie } from "react-chartjs-2";
+import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +12,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement,
 } from "chart.js";
 
 ChartJS.register(
@@ -21,7 +20,6 @@ ChartJS.register(
   BarElement,
   PointElement,
   LineElement,
-  ArcElement,
   Title,
   Tooltip,
   Legend
@@ -35,22 +33,22 @@ const colors = {
   science: "rgba(54, 162, 235, 0.5)",
   history: "rgba(75, 192, 192, 0.5)",
   art: "rgba(255, 159, 64, 0.5)",
+  present: "#4caf50",
+  absent: "#f44336",
 };
 
 const studentPerformanceData: any = {
   "John Doe": {
     grades: [85, 90, 78, 92],
-    attendance: [12, 15, 10, 14],
-    assignments: [80, 88, 70, 85],
+    weeklyAttendance: [5, 4, 6, 4],
   },
   "Jane Smith": {
     grades: [90, 85, 80, 88],
-    attendance: [14, 12, 11, 15],
-    assignments: [85, 80, 75, 90],
+    weeklyAttendance: [6, 5, 4, 7],
   },
 };
 
-const labels = ["Math", "Science", "History", "Art"];
+const labels = ["Week 1", "Week 2", "Week 3", "Week 4"];
 
 const getStudentData = (student: string) => {
   const data = studentPerformanceData[student];
@@ -76,31 +74,9 @@ const getStudentData = (student: string) => {
       labels,
       datasets: [
         {
-          label: "Attendance",
-          data: data.attendance,
-          backgroundColor: [
-            colors.math,
-            colors.science,
-            colors.history,
-            colors.art,
-          ],
-          borderColor: colors.accent,
-          borderWidth: 1,
-        },
-      ],
-    },
-    assignments: {
-      labels,
-      datasets: [
-        {
-          label: "Assignments",
-          data: data.assignments,
-          backgroundColor: [
-            colors.math,
-            colors.science,
-            colors.history,
-            colors.art,
-          ],
+          label: "Days Present",
+          data: data.weeklyAttendance,
+          backgroundColor: colors.present,
           borderColor: colors.accent,
           borderWidth: 1,
         },
@@ -140,8 +116,7 @@ export default function PerformanceTrackingPage() {
           </select>
         </div>
 
-        {/* Performance Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-4 bg-white rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-4 text-secondary">Grades</h2>
             <Bar
@@ -178,7 +153,7 @@ export default function PerformanceTrackingPage() {
                     },
                     ticks: {
                       color: colors.secondary,
-                      callback: (value) => `${value} pts`,
+                      callback: (value) => `${value}%`,
                     },
                   },
                 },
@@ -204,7 +179,7 @@ export default function PerformanceTrackingPage() {
                   tooltip: {
                     callbacks: {
                       label: (context) => {
-                        return `${context.dataset.label}: ${context.raw}`;
+                        return `${context.dataset.label}: ${context.raw} days`;
                       },
                     },
                   },
@@ -225,33 +200,6 @@ export default function PerformanceTrackingPage() {
                     ticks: {
                       color: colors.secondary,
                       callback: (value) => `${value} days`,
-                    },
-                  },
-                },
-              }}
-            />
-          </div>
-
-          <div className="p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4 text-secondary">
-              Assignments
-            </h2>
-            <Pie
-              data={getStudentData(selectedStudent).assignments}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    position: "top",
-                    labels: {
-                      color: colors.secondary,
-                    },
-                  },
-                  tooltip: {
-                    callbacks: {
-                      label: (context) => {
-                        return `${context.label}: ${context.raw}`;
-                      },
                     },
                   },
                 },
