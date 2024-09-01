@@ -85,3 +85,4 @@ async def update_teacher(teacher_id: str, teacher: Teacher):
 async def delete_teacher(teacher_id: str):
     db.db.teachers.delete_one({"_id": ObjectId(teacher_id)})
     return JSONResponse({"data": "Successfully deleted teacher", "error": ""})
+

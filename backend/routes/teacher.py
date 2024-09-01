@@ -1,10 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
+
 from utilities.response import JSONResponse
 from utilities.database import Database
+from utilities.object_loading import upload_file, get_file, delete_file, list_files
+
 from models.attendance import AttendanceCreate
 from models.students import Student
 from models.schedule import Schedule
-from typing import List
+
+from typing import List, Annotated
 from bson import ObjectId
 
 router = APIRouter()
@@ -54,3 +58,25 @@ async def get_schedule():
         result[i]["_id"] = str(result[i]["_id"])
     return JSONResponse({"data": list(result), "error": ""})
 
+@router.put("/schedule/{schedule_id}")
+async def update_schedule(schedule_id: str, schedule: Schedule):
+    db.db.schedule.update_one({"_id": ObjectId(schedule_id)}, {"$set": schedule.dict()})
+    return JSONResponse({"data": schedule.dict(), "error": ""})
+
+@router.post("/ar")
+async def upload(glb: UploadFile = File(...), usdz_file: UploadFile = File(...)):
+    return JSONResponse({"data": "File uploaded successfully", "error": ""})
+
+@router.delete("/ar/{file_name}")
+async def delete(file_name: str):
+    delete_file(file_name)
+    return JSONResponse({"data": "File deleted successfully", "error": ""})
+
+@router.post("/take_attendance")
+async def take_attendance(photo: UploadFile = File(...)):
+    # here is your function to take attendance
+    # Input: photo
+    # Output: list of student ids
+    student_ids = [] # list of student ids
+    
+    return JSONResponse({"data": student_ids, "error": ""})
