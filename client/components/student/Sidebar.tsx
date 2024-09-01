@@ -7,9 +7,10 @@ import {
   BotMessageSquare,
   CalendarDays,
   BookCheck,
+  Calendar,
+  Book,
 } from "lucide-react";
 import { ReactNode } from "react";
-import { Calendar, Book, Users } from "lucide-react";
 
 export type SidebarItem = {
   label: string;
@@ -46,15 +47,22 @@ export const sidebarItems: SidebarItem[] = [
 ];
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(window.innerWidth >= 768);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
       setIsOpen(window.innerWidth >= 768);
     };
+    if (typeof window !== "undefined") {
+      handleResize();
+      window.addEventListener("resize", handleResize);
+    }
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize);
+      }
+    };
   }, []);
 
   return (
