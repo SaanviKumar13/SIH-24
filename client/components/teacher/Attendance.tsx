@@ -164,7 +164,7 @@ export default function Attendance() {
           </table>
         </div>
 
-        <div className="p-4 bg-white rounded-lg shadow-md">
+        <div>
           <div className="mt-4 flex space-x-4">
             <CSVLink
               data={exportData}
