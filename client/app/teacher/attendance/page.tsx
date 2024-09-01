@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { CSVLink } from "react-csv";
-import { Camera, Download, Upload } from "lucide-react";
+import { Download, Upload } from "lucide-react";
 import { Line } from "react-chartjs-2";
+import Link from "next/link";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -53,16 +54,7 @@ const attendanceTrends = {
 };
 
 export default function AttendancePage() {
-  const [isFaceRecognitionEnabled, setFaceRecognitionEnabled] = useState(false);
   const [attendanceData, setAttendanceData] = useState<any>(mockAttendanceData);
-
-  const handleFaceRecognitionToggle = () => {
-    setFaceRecognitionEnabled((prev) => !prev);
-  };
-
-  const handleFaceRecognition = () => {
-    console.log("Face recognition triggered");
-  };
 
   const generateCSV = () => {
     return attendanceData.map((entry: any) => ({
@@ -79,34 +71,14 @@ export default function AttendancePage() {
       </h1>
 
       <div className="flex flex-col space-y-6">
-        <div className="p-4 bg-white rounded-lg shadow-md flex flex-col space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">Face Recognition</h2>
-            <button
-              onClick={handleFaceRecognitionToggle}
-              className={`p-2 rounded-lg text-white ${
-                isFaceRecognitionEnabled ? "bg-red-500" : "bg-green-500"
-              }`}
-            >
-              {isFaceRecognitionEnabled ? "Disable" : "Enable"} Face Recognition
-            </button>
-          </div>
-
-          {isFaceRecognitionEnabled && (
-            <div className="relative w-full h-64 bg-gray-200 flex items-center justify-center rounded-lg">
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <button
-                  onClick={handleFaceRecognition}
-                  className="p-2 rounded-lg bg-blue-500 text-white flex items-center space-x-2"
-                >
-                  <Camera className="w-5 h-5" />
-                  <span>Start Face Recognition</span>
-                </button>
-              </div>
-
-              <div className="w-full h-full bg-gray-800 rounded-lg"></div>
-            </div>
-          )}
+        <div className="p-4 bg-white rounded-lg shadow-md flex justify-between items-center">
+          <h2 className="text-xl font-bold">Face Recognition</h2>
+          <Link
+            href="/teacher/attendance/camera"
+            className="p-2 rounded-lg bg-blue-500 text-white"
+          >
+            Go to Camera
+          </Link>
         </div>
 
         <div className="p-4 bg-white rounded-lg shadow-md">
