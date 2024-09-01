@@ -39,26 +39,45 @@ const colors = {
 
 const studentPerformanceData: any = {
   "John Doe": {
-    grades: [85, 90, 78, 92],
+    subjects: {
+      Math: [85, 90, 78, 92],
+      Science: [80, 85, 88, 90],
+      History: [75, 80, 70, 85],
+      Art: [90, 88, 85, 92],
+    },
     weeklyAttendance: [5, 4, 6, 4],
   },
   "Jane Smith": {
-    grades: [90, 85, 80, 88],
+    subjects: {
+      Math: [90, 85, 80, 88],
+      Science: [85, 80, 75, 90],
+      History: [80, 85, 70, 80],
+      Art: [88, 90, 85, 92],
+    },
     weeklyAttendance: [6, 5, 4, 7],
   },
 };
 
-const labels = ["Week 1", "Week 2", "Week 3", "Week 4"];
+const labels = ["Math", "Science", "History", "Art"];
 
 const getStudentData = (student: string) => {
   const data = studentPerformanceData[student];
+
+  // Calculate average grade for each subject
+  const averageGrades = Object.keys(data.subjects).map((subject) => {
+    const grades = data.subjects[subject];
+    const average =
+      grades.reduce((sum: any, grade: any) => sum + grade, 0) / grades.length;
+    return average;
+  });
+
   return {
     grades: {
       labels,
       datasets: [
         {
           label: "Grades",
-          data: data.grades,
+          data: averageGrades,
           backgroundColor: [
             colors.math,
             colors.science,
