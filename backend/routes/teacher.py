@@ -14,6 +14,7 @@ from bson import ObjectId
 router = APIRouter(tags=["teacher"])
 db = Database()
 
+
 @router.get("/details/{teacher_id}")
 async def get_me(teacher_id: str):
     batch = db.db.batch.find_one({"teacher": teacher_id})
@@ -27,7 +28,6 @@ async def get_me(teacher_id: str):
     teacher["_id"] = str(teacher["_id"])
     print(teacher)
     return JSONResponse({"data": teacher, "error": ""})
-
 
 
 @router.get("/attendance/{student_id}")
