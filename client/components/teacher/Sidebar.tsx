@@ -1,8 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Menu, X, UserCircle2Icon, Calendar, Book, Users } from "lucide-react";
+import {
+  Menu,
+  X,
+  UserCircle2Icon,
+  Calendar,
+  Book,
+  Users,
+  LogOut,
+} from "lucide-react";
 import { ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export type SidebarItem = {
   label: string;
@@ -26,11 +35,17 @@ export const sidebarItems: SidebarItem[] = [
     icon: <Users size={24} />,
     href: "/teacher/manage-resource",
   },
+  {
+    label: "Manage Students",
+    icon: <Users size={24} />,
+    href: "/teacher/manage-students",
+  },
 ];
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -45,7 +60,12 @@ export default function Sidebar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleLogout = () => {
+    router.push("/");
+  };
+
   if (!mounted) return null;
+
   return (
     <>
       {isOpen && (
@@ -113,7 +133,7 @@ export default function Sidebar() {
           ))}
         </div>
         {isOpen && (
-          <div className="absolute bottom-4 w-full px-4 md:px-6 flex justify-start">
+          <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
             <a
               href="#"
               className="flex items-center space-x-2 text-white hover:text-secondary"
@@ -126,6 +146,15 @@ export default function Sidebar() {
                 <span className="text-sm md:text-lg font-medium">Profile</span>
               )}
             </a>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 text-red-400"
+            >
+              <LogOut size={24} className="text-red-400" />
+              {isOpen && (
+                <span className="text-sm md:text-lg font-medium">Logout</span>
+              )}
+            </button>
           </div>
         )}
       </div>

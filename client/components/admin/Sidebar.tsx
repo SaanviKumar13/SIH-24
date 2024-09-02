@@ -7,9 +7,12 @@ import {
   ChartLine,
   Bolt,
   Calendar,
+  LogOut,
 } from "lucide-react";
 import { ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 export type SidebarItem = {
   label: string;
   icon: ReactNode;
@@ -28,6 +31,11 @@ export const sidebarItems: SidebarItem[] = [
     href: "/admin/config",
   },
   {
+    label: "Manage Teachers",
+    icon: <Bolt size={24} />,
+    href: "/admin/manage-teachers",
+  },
+  {
     label: "Analytics",
     icon: <ChartLine size={24} />,
     href: "/admin/analytics",
@@ -37,6 +45,7 @@ export const sidebarItems: SidebarItem[] = [
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -49,6 +58,10 @@ export default function Sidebar() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleLogout = () => {
+    router.push("/");
+  };
 
   if (!mounted) return null;
 
@@ -119,19 +132,22 @@ export default function Sidebar() {
           ))}
         </div>
         {isOpen && (
-          <div className="absolute bottom-4 w-full px-4 md:px-6 flex justify-start">
-            <a
-              href="#"
-              className="flex items-center space-x-2 text-white hover:text-secondary"
-            >
-              <UserCircle2Icon
-                size={24}
-                className="text-white hover:text-secondary"
-              />
+          <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
+            <a href="#" className="flex items-center space-x-2 text-white ">
+              <UserCircle2Icon size={24} className="text-white " />
               {isOpen && (
                 <span className="text-sm md:text-lg font-medium">Profile</span>
               )}
             </a>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 text-red-400"
+            >
+              <LogOut size={24} className="text-red-400" />
+              {isOpen && (
+                <span className="text-sm md:text-lg font-medium">Logout</span>
+              )}
+            </button>
           </div>
         )}
       </div>

@@ -9,9 +9,11 @@ import {
   BookCheck,
   Calendar,
   Book,
+  LogOut,
 } from "lucide-react";
 import { ReactNode } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export type SidebarItem = {
   label: string;
@@ -49,6 +51,7 @@ export const sidebarItems: SidebarItem[] = [
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleResize = () => {
@@ -65,6 +68,10 @@ export default function Sidebar() {
       }
     };
   }, []);
+
+  const handleLogout = () => {
+    router.push("/");
+  };
 
   return (
     <>
@@ -84,7 +91,10 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between p-4">
           {isOpen ? (
-            <Link href="/" className="text-2xl text-center font-bold text-primary md:text-4xl">
+            <Link
+              href="/"
+              className="text-2xl text-center font-bold text-primary md:text-4xl"
+            >
               SIH&apos;24
             </Link>
           ) : (
@@ -130,7 +140,7 @@ export default function Sidebar() {
           ))}
         </div>
         {isOpen && (
-          <div className="absolute bottom-4 w-full px-4 md:px-6 flex justify-start">
+          <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
             <a
               href="#"
               className="flex items-center space-x-2 text-white hover:text-secondary"
@@ -143,6 +153,15 @@ export default function Sidebar() {
                 <span className="text-sm md:text-lg font-medium">Profile</span>
               )}
             </a>
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 text-red-400"
+            >
+              <LogOut size={24} className="text-red-400" />
+              {isOpen && (
+                <span className="text-sm md:text-lg font-medium">Logout</span>
+              )}
+            </button>
           </div>
         )}
       </div>
