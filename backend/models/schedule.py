@@ -1,6 +1,9 @@
 from pydantic import BaseModel
 
+
 class Schedule(BaseModel):
-    date: str
+    time: str
+    day: str
     batch: str
-    topic: str
+    subject: str
+    type: str
