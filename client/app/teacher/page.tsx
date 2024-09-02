@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { DeleteIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { Notice } from "@/utils/types";
+import axios from "axios";
 
 export default function Dashboard() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -10,62 +11,71 @@ export default function Dashboard() {
   const [newNoticeContent, setNewNoticeContent] = useState<string>("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/notice")
-      .then((response) => response.json())
-      .then((data: Notice[]) => setNotices(data))
-      .catch((error) => {
+    const getAllNotices = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/notice");
+        console.log(response.data.data);
+        setNotices(response.data.data);
+        console.log(notices);
+      } catch (error) {
         console.error("Error fetching notices:", error);
-        toast.error("Failed to load notices.");
-      });
+        toast.error("Failed to fetch notices.");
+      }
+    };
+
+    getAllNotices();
   }, []);
 
-  const handleAddNotice = () => {
+  const handleAddNotice = async () => {
     if (newNoticeHeading.trim() && newNoticeContent.trim()) {
-      fetch("http://127.0.0.1:8000/notice", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          heading: newNoticeHeading,
-          content: newNoticeContent,
-        }),
-      })
-        .then((response) => response.json())
-        .then((newNotice: Notice) => {
-          setNotices((prevNotices) => [...prevNotices, newNotice]);
-          setNewNoticeHeading("");
-          setNewNoticeContent("");
-          toast.success("Notice added successfully.");
-        })
-        .catch((error) => {
-          console.error("Error adding notice:", error);
-          toast.error("Failed to add notice.");
+      try {
+        const response = await fetch("http://127.0.0.1:8000/notice", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            heading: newNoticeHeading,
+            content: newNoticeContent,
+          }),
         });
+
+        if (!response.ok) {
+          throw new Error("Failed to add notice.");
+        }
+
+        const newNotice = await axios.get("http://127.0.0.1:8000/notice");
+        setNotices(newNotice.data.data);
+        setNewNoticeHeading("");
+        setNewNoticeContent("");
+        toast.success("Notice added successfully.");
+      } catch (error) {
+        console.error("Error adding notice:", error);
+        toast.error("Failed to add notice.");
+      }
     } else {
       toast.error("Please provide both heading and content.");
     }
   };
 
-  const handleDeleteNotice = (id: string) => {
-    fetch(`http://127.0.0.1:8000/notice/${id}`, {
-      method: "DELETE",
-    })
-      .then((response) => {
-        if (response.ok) {
-          setNotices((prevNotices) =>
-            prevNotices.filter((notice) => notice.noticeId !== id)
-          );
-          toast.success("Notice deleted successfully.");
-        } else {
-          console.error("Error deleting notice:", response.statusText);
-          toast.error("Failed to delete notice.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error deleting notice:", error);
-        toast.error("Failed to delete notice.");
+  const handleDeleteNotice = async (id: string) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/notice/${id}`, {
+        method: "DELETE",
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete notice.");
+      }
+
+      setNotices((prevNotices) =>
+        prevNotices.filter((notice) => notice._id !== id)
+      );
+      toast.success("Notice deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting notice:", error);
+      toast.error("Failed to delete notice.");
+    }
   };
 
   return (
@@ -94,7 +104,7 @@ export default function Dashboard() {
           ) : (
             notices.map((notice) => (
               <div
-                key={notice.noticeId}
+                key={notice._id}
                 className="p-4 bg-gray-50 rounded-lg flex justify-between items-center shadow-sm"
               >
                 <div>
@@ -104,7 +114,7 @@ export default function Dashboard() {
                   <p className="text-gray-700">{notice.content}</p>
                 </div>
                 <button
-                  onClick={() => handleDeleteNotice(notice.noticeId)}
+                  onClick={() => handleDeleteNotice(notice._id)}
                   className="text-red-600 hover:text-red-800 font-semibold"
                 >
                   <DeleteIcon className="text-red-600 hover:text-red-800" />
@@ -129,7 +139,7 @@ export default function Dashboard() {
           ></textarea>
           <button
             onClick={handleAddNotice}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold"
+            className="w-fit bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold"
           >
             Add Notice
           </button>
