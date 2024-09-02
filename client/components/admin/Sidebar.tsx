@@ -8,6 +8,7 @@ import {
   Bolt,
   Calendar,
   LogOut,
+  Users,
 } from "lucide-react";
 import { ReactNode } from "react";
 import Link from "next/link";
@@ -20,19 +21,19 @@ export type SidebarItem = {
 };
 
 export const sidebarItems: SidebarItem[] = [
-  {
-    label: "User Permissions",
-    icon: <Calendar size={24} />,
-    href: "/admin/permissions",
-  },
-  {
-    label: "Config",
-    icon: <Bolt size={24} />,
-    href: "/admin/config",
-  },
+  // {
+  //   label: "User Permissions",
+  //   icon: <Calendar size={24} />,
+  //   href: "/admin/permissions",
+  // },
+  // {
+  //   label: "Config",
+  //   icon: <Bolt size={24} />,
+  //   href: "/admin/config",
+  // },
   {
     label: "Manage Teachers",
-    icon: <Bolt size={24} />,
+    icon: <Users size={24} />,
     href: "/admin/manage-teachers",
   },
   {

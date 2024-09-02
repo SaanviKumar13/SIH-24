@@ -8,6 +8,8 @@ import {
   Book,
   Users,
   LogOut,
+  Camera,
+  MapPinCheck,
 } from "lucide-react";
 import { ReactNode } from "react";
 import Link from "next/link";
@@ -22,7 +24,7 @@ export type SidebarItem = {
 export const sidebarItems: SidebarItem[] = [
   {
     label: "Attendance",
-    icon: <Calendar size={24} />,
+    icon: <Camera size={24} />,
     href: "/teacher/attendance",
   },
   {
@@ -31,9 +33,9 @@ export const sidebarItems: SidebarItem[] = [
     href: "/teacher/performance",
   },
   {
-    label: "Resource Management",
-    icon: <Users size={24} />,
-    href: "/teacher/manage-resource",
+    label: "Classroom Management",
+    icon: <MapPinCheck size={24} />,
+    href: "/teacher/manage-classroom",
   },
   {
     label: "Manage Students",
