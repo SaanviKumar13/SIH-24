@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, Request, UploadFile
 
 from utilities.response import JSONResponse
 from utilities.database import Database
@@ -13,6 +13,21 @@ from bson import ObjectId
 
 router = APIRouter(tags=["teacher"])
 db = Database()
+
+@router.get("/details/{teacher_id}")
+async def get_me(teacher_id: str):
+    batch = db.db.batch.find_one({"teacher": teacher_id})
+    batch["_id"] = str(batch["_id"])
+    students = list(db.db.students.find({"batch": batch["_id"]}))
+    for i in range(len(students)):
+        students[i]["_id"] = str(students[i]["_id"])
+    teacher = dict(db.db.teachers.find_one({"_id": ObjectId(teacher_id)}))
+    teacher["batch"] = batch
+    teacher["students"] = students
+    teacher["_id"] = str(teacher["_id"])
+    print(teacher)
+    return JSONResponse({"data": teacher, "error": ""})
+
 
 
 @router.get("/attendance/{student_id}")
@@ -110,7 +125,7 @@ async def create_student(student: Student):
 
 @router.get("/students/{batch_id}")
 async def get_students(batch_id: str):
-    result = db.db.students.find({"batch": batch_id})
+    result = list(db.db.students.find({"batch": batch_id}))
     for i in range(len(result)):
         result[i]["_id"] = str(result[i]["_id"])
     return JSONResponse({"data": list(result), "error": ""})
