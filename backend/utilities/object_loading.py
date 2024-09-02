@@ -6,11 +6,12 @@ import os
 load_dotenv()
 
 s3_client = client(
-    's3',
-    aws_access_key_id=os.getenv('ACCESS_KEY'),
-    aws_secret_access_key=os.getenv('SECRET_KEY')
+    "s3",
+    aws_access_key_id=os.getenv("ACCESS_KEY"),
+    aws_secret_access_key=os.getenv("SECRET_KEY"),
 )
 BUCKET_NAME = os.getenv("BUCKET_NAME", "alvin-sih-bucket")
+
 
 def upload_file(file, object_name):
     try:
@@ -19,9 +20,11 @@ def upload_file(file, object_name):
         return False
     return True
 
+
 def get_file(object_name):
     file = s3_client.get_object(Bucket=BUCKET_NAME, Key=object_name)
-    return file['Body'].read()
+    return file["Body"].read()
+
 
 def delete_file(object_name):
     try:
@@ -30,10 +33,12 @@ def delete_file(object_name):
         return False
     return True
 
+
 def list_files():
     print(BUCKET_NAME)
     files = s3_client.list_objects_v2(Bucket=BUCKET_NAME)
-    return [file['Key'] for file in files.get('Contents', [])]
+    return [file["Key"] for file in files.get("Contents", [])]
+
 
 if __name__ == "__main__":
     print(list_files())
