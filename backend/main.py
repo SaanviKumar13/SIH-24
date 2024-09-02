@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import admin, teacher, student
+from routes import admin, teacher, student, notice
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,6 +8,7 @@ app = FastAPI()
 app.include_router(admin.router)
 app.include_router(teacher.router)
 app.include_router(student.router)
+app.include_router(notice.router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

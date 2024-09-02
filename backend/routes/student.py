@@ -12,7 +12,7 @@ async def get_student_details(student_id: str):
     student["_id"] = str(student["_id"])
     batch = db.db.batch.find_one({"_id": ObjectId(student["batch"])})
     print(batch)
-    teacher = db.db.teacher.find_one({"_id": ObjectId(batch["teacher"])})
+    teacher = db.db.teachers.find_one({"_id": ObjectId(batch["teacher"])})
     teacher["_id"] = str(teacher["_id"])
     batch["_id"] = str(teacher["_id"])
     student["batch"] = batch
