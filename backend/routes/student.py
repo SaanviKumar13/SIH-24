@@ -6,6 +6,7 @@ from utilities.response import JSONResponse
 router = APIRouter(tags=["student"], prefix="/student")
 db = Database()
 
+
 @router.get("/details/{student_id}")
 async def get_student_details(student_id: str):
     student = db.db.students.find_one({"_id": ObjectId(student_id)})
@@ -18,6 +19,7 @@ async def get_student_details(student_id: str):
     student["batch"] = batch
     student["teacher"] = teacher
     return JSONResponse({"data": student, "error": ""})
+
 
 @router.get("/attendance")
 async def attendance(student_id: str):
