@@ -7,3 +7,4 @@ class Schedule(BaseModel):
     batch: str
     subject: str
     type: str
+    location: str
