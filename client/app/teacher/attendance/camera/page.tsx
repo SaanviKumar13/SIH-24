@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Webcam from "react-webcam";
 import { Camera } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function CameraPage() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -18,6 +19,30 @@ export default function CameraPage() {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       setCapturedImage(imageSrc);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (capturedImage) {
+      const response = await fetch(capturedImage);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append("photo", blob, "attendance.jpg");
+
+      try {
+        const response = await fetch("http://127.0.0.1:8000/take_attendance", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          toast.success("Image uploaded successfully");
+        } else {
+          toast.error("Error uploading image");
+        }
+      } catch (error) {
+        toast.error("Error uploading image");
+      }
     }
   };
 
@@ -37,6 +62,7 @@ export default function CameraPage() {
               videoConstraints={videoConstraints}
               className="rounded-lg"
               ref={webcamRef}
+              mirrored={true}
             />
             <button
               onClick={handleCapture}
@@ -47,11 +73,19 @@ export default function CameraPage() {
             </button>
           </>
         ) : (
-          <img
-            src={capturedImage}
-            alt="Captured"
-            className="object-cover w-full h-full rounded-lg"
-          />
+          <>
+            <img
+              src={capturedImage}
+              alt="Captured"
+              className="object-cover w-full h-full rounded-lg"
+            />
+            <button
+              onClick={handleUpload}
+              className="mt-4 p-4 rounded-lg bg-green-500 text-white flex items-center space-x-2"
+            >
+              <span>Upload</span>
+            </button>
+          </>
         )}
       </div>
     </div>

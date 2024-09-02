@@ -136,18 +136,15 @@ export default function Sidebar() {
         </div>
         {isOpen && (
           <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
-            <a
-              href="#"
-              className="flex items-center space-x-2 text-white hover:text-secondary"
+            <Link
+              href="/teacher"
+              className="flex items-center space-x-2 text-white "
             >
-              <UserCircle2Icon
-                size={24}
-                className="text-white hover:text-secondary"
-              />
+              <UserCircle2Icon size={24} className="text-white " />
               {isOpen && (
                 <span className="text-sm md:text-lg font-medium">Profile</span>
               )}
-            </a>
+            </Link>
             <button
               onClick={handleLogout}
               className="flex items-center space-x-2 text-red-400"

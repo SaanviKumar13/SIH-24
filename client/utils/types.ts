@@ -18,3 +18,9 @@ export interface Conflict {
   day: string;
   time: string;
 }
+
+export interface Notice {
+  noticeId: string;
+  content: string;
+  heading: string;
+}
