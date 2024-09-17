@@ -1,23 +1,55 @@
+"use client";
+import { useState, useEffect } from "react";
+import { DeleteIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { Notice } from "@/utils/types";
+
 export default function Dashboard() {
+  const [notices, setNotices] = useState<Notice[]>([]);
+
+  useEffect(() => {
+    const getAllNotices = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/notice");
+        if (response.data.data && Array.isArray(response.data.data)) {
+          setNotices(response.data.data);
+          toast.success("Notices fetched successfully.");
+        } else {
+          toast.error("Unexpected data format received.");
+        }
+      } catch (error) {
+        console.error("Error fetching notices:", error);
+        toast.error("Failed to fetch notices.");
+      }
+    };
+
+    getAllNotices();
+  }, []);
+
   return (
-    <div className="h-fit p-5">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-      <p className="text-lg mb-4">
-        Welcome to your dashboard. Here you can view your key metrics, recent
-        activities, and access important information.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="p-4 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Recent Activities</h2>
-          <p>Your recent activities will be displayed here.</p>
-        </div>
-        <div className="p-4 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Upcoming Events</h2>
-          <p>Check out upcoming events and deadlines here.</p>
-        </div>
-        <div className="p-4 bg-white shadow-md rounded-lg">
-          <h2 className="text-xl font-semibold mb-2">Important Notices</h2>
-          <p>Stay informed with important notices and announcements.</p>
+    <div className="p-6 min-h-screen bg-gray-50">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Notice Board</h1>
+      <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Notices</h2>
+        <div className="space-y-4">
+          {notices.length === 0 ? (
+            <p className="text-gray-600">No notices available.</p>
+          ) : (
+            notices.map((notice) => (
+              <div
+                key={notice._id}
+                className="p-4 bg-gray-50 rounded-lg flex justify-between items-center shadow-sm"
+              >
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    {notice.heading}
+                  </h3>
+                  <p className="text-gray-700">{notice.content}</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

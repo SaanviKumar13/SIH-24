@@ -20,7 +20,8 @@ export default function LoginPage() {
     <div className="flex flex-col place-items-center md:flex-row min-h-screen bg-primary">
       <div className="md:w-[60vw] w-full flex items-start justify-center pt-12 md:pt-0 p-8">
         <h1 className="text-4xl md:text-6xl font-bold text-secondary">
-          SIH&apos;24
+          Smart Classroom <br />
+          Management System
         </h1>
       </div>
       <div>
@@ -42,6 +43,16 @@ export default function LoginPage() {
                     onClick={() => setRole("Student")}
                   >
                     Student
+                  </div>
+                  <div
+                    className={`w-fit h-fit px-3 py-2 flex items-center justify-center border-2 rounded-md cursor-pointer transition-colors duration-200 ${
+                      role === "Parent"
+                        ? "border-secondary bg-secondary text-white"
+                        : "border-gray-300 bg-gray-100 hover:border-secondary"
+                    }`}
+                    onClick={() => setRole("Parent")}
+                  >
+                    Parent
                   </div>
                   <div
                     className={`w-fit h-fit px-3 py-2 flex items-center justify-center border-2 rounded-md cursor-pointer transition-colors duration-200 ${

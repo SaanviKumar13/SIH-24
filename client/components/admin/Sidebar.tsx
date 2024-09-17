@@ -37,6 +37,11 @@ export const sidebarItems: SidebarItem[] = [
     href: "/admin/manage-teachers",
   },
   {
+    label: "Manage Students",
+    icon: <Users size={24} />,
+    href: "/admin/manage-students",
+  },
+  {
     label: "Analytics",
     icon: <ChartLine size={24} />,
     href: "/admin/analytics",
@@ -88,7 +93,7 @@ export default function Sidebar() {
               href="/"
               className="text-2xl font-bold text-primary md:text-4xl"
             >
-              SIH&apos;24
+              SCMS
             </Link>
           ) : (
             <button
@@ -134,7 +139,10 @@ export default function Sidebar() {
         </div>
         {isOpen && (
           <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
-            <a href="#" className="flex items-center space-x-2 text-white ">
+            <a
+              href="/admin"
+              className="flex items-center space-x-2 text-white "
+            >
               <UserCircle2Icon size={24} className="text-white " />
               {isOpen && (
                 <span className="text-sm md:text-lg font-medium">Profile</span>

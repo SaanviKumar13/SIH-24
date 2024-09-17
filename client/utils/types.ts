@@ -20,7 +20,7 @@ export interface Conflict {
 }
 
 export interface Notice {
-  noticeId: string;
+  _id: string;
   content: string;
   heading: string;
 }

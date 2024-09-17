@@ -35,7 +35,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     label: "Classroom Management",
     icon: <MapPinCheck size={24} />,
-    href: "/teacher/manage-classroom",
+    href: "/teacher/manage",
   },
   {
     label: "Manage Students",
@@ -90,7 +90,7 @@ export default function Sidebar() {
               href="/"
               className="text-2xl font-bold text-primary md:text-4xl"
             >
-              SIH&apos;24
+              SCMS
             </Link>
           ) : (
             <button

@@ -1,12 +1,11 @@
 "use client";
-
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Modal, Form, Input, Radio, Button, Tabs, Table } from "antd";
-import { Bolt, BookOpen, XCircle } from "lucide-react";
+import { Modal, Form, Input, Radio, Button, Tabs, Table, Checkbox } from "antd";
+import { Bolt, BookOpen, XCircle, CheckCircle, Clock } from "lucide-react";
 import toast from "react-hot-toast";
 
 const { Group: RadioGroup, Button: RadioButton } = Radio;
@@ -30,6 +29,15 @@ interface Resource {
   usage: { teacher: string; class: string }[];
 }
 
+interface Ticket {
+  id: string;
+  title: string;
+  description: string;
+  className: string;
+  completed: boolean;
+  color: string;
+}
+
 const eventTypeColors: { [key: string]: string } = {
   Class: "#4a90e2",
   Extracurricular: "#f5a623",
@@ -48,6 +56,8 @@ const initialResources: Resource[] = [
   },
 ];
 
+const initialTickets: Ticket[] = [];
+
 const ResourceManager = () => {
   const [events, setEvents] = useState<Event[]>(initialEvents);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -56,6 +66,9 @@ const ResourceManager = () => {
   const [usageDetails, setUsageDetails] = useState<
     { teacher: string; class: string }[] | null
   >(null);
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [isTicketModalVisible, setIsTicketModalVisible] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
   const handleEventDrop = (info: any) => {
     const updatedEvent = {
@@ -143,6 +156,34 @@ const ResourceManager = () => {
     setUsageDetails(resource.usage);
   };
 
+  const handleTicketChange = (changedValues: any) => {
+    if (selectedTicket) {
+      const updatedTicket: Ticket = {
+        ...selectedTicket,
+        ...changedValues,
+        color: changedValues.completed ? "#4caf50" : "#d0021b",
+      };
+      setSelectedTicket(updatedTicket);
+    }
+  };
+
+  const handleTicketOk = () => {
+    if (selectedTicket) {
+      setTickets((prev) => {
+        if (!prev) return [selectedTicket];
+        return [...prev, selectedTicket];
+      });
+      toast.success("Ticket added successfully.");
+    }
+    setIsTicketModalVisible(false);
+    setSelectedTicket(null);
+  };
+
+  const handleTicketCancel = () => {
+    setIsTicketModalVisible(false);
+    setSelectedTicket(null);
+  };
+
   const eventContent = (eventInfo: any) => {
     const { event } = eventInfo;
     const { extendedProps } = event;
@@ -214,6 +255,37 @@ const ResourceManager = () => {
     },
   ];
 
+  const ticketColumns = [
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      render: (title: string, record: Ticket) => (
+        <div style={{ color: record.color }}>{title}</div>
+      ),
+    },
+    {
+      title: "Class Name",
+      dataIndex: "className",
+      key: "className",
+    },
+    {
+      title: "Status",
+      dataIndex: "completed",
+      key: "completed",
+      render: (completed: boolean) => (
+        <div
+          style={{
+            color: completed ? "#4caf50" : "#d0021b",
+            fontWeight: "bold",
+          }}
+        >
+          {completed ? "Completed" : "Pending"}
+        </div>
+      ),
+    },
+  ];
+
   const getResourceSummary = () => {
     const summary = {
       operational: resources.filter((res) => res.status === "Operational")
@@ -235,7 +307,44 @@ const ResourceManager = () => {
         Resource Manager
       </h1>
       <Tabs defaultActiveKey="1">
-        <TabPane tab="Resource Manager" key="1">
+        <TabPane tab="Calendar" key="1">
+          <FullCalendar
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            initialView="timeGridWeek"
+            editable
+            selectable
+            events={events}
+            eventContent={eventContent}
+            select={handleSelectSlot}
+            eventDrop={handleEventDrop}
+          />
+          <Modal
+            title="Event Details"
+            visible={isModalVisible}
+            onOk={handleOk}
+            onCancel={handleCancel}
+          >
+            <Form
+              layout="vertical"
+              initialValues={selectedEvent}
+              onValuesChange={handleFormChange}
+            >
+              <Form.Item label="Event Title" name="title">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Event Type" name="type">
+                <RadioGroup>{typeSelectRender()}</RadioGroup>
+              </Form.Item>
+              <Form.Item label="Teacher Name" name="teacher">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Lab" name="lab">
+                <Input />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </TabPane>
+        <TabPane tab="Resource List" key="2">
           <div className="w-full p-4 bg-white rounded-lg shadow-md mb-8">
             <h2 className="text-xl font-bold mb-4">Resource Summary</h2>
             <div className="flex items-center justify-evenly space-x-6 mb-6">
@@ -261,94 +370,68 @@ const ResourceManager = () => {
                 </div>
               </div>
             </div>
-            <h2 className="text-xl font-bold mb-4">Resources</h2>
-            <Table
-              columns={resourceColumns}
-              dataSource={resources}
-              rowKey="id"
-              pagination={false}
-            />
           </div>
-        </TabPane>
-        <TabPane tab="Class Manager" key="2">
-          <div className="w-full p-4 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4">Weekly Calendar</h2>
-            <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-              initialView="timeGridWeek"
-              events={events.map((event) => ({
-                id: event.id,
-                title: event.title,
-                start: event.start,
-                end: event.end,
-                extendedProps: {
-                  type: event.type,
-                  teacher: event.teacher,
-                  lab: event.lab,
-                  color: event.color,
-                },
-              }))}
-              selectable
-              select={handleSelectSlot}
-              eventDrop={handleEventDrop}
-              eventContent={eventContent}
-            />
-          </div>
-        </TabPane>
-      </Tabs>
-
-      <Modal
-        title="Add/Edit Event"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <Form
-          initialValues={selectedEvent || undefined}
-          onValuesChange={handleFormChange}
-          layout="vertical"
-        >
-          <Form.Item
-            name="title"
-            label="Event Title"
-            rules={[
-              { required: true, message: "Please input the event title!" },
-            ]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item name="type" label="Event Type">
-            <RadioGroup>{typeSelectRender()}</RadioGroup>
-          </Form.Item>
-          <Form.Item name="teacher" label="Teacher">
-            <Input />
-          </Form.Item>
-          <Form.Item name="lab" label="Lab">
-            <Input />
-          </Form.Item>
-        </Form>
-      </Modal>
-
-      <Modal
-        title="Usage Details"
-        visible={!!usageDetails}
-        onCancel={() => setUsageDetails(null)}
-        footer={null}
-      >
-        {usageDetails && usageDetails.length > 0 ? (
           <Table
-            columns={[
-              { title: "Teacher", dataIndex: "teacher", key: "teacher" },
-              { title: "Class", dataIndex: "class", key: "class" },
-            ]}
-            dataSource={usageDetails}
-            rowKey="teacher"
+            dataSource={resources}
+            columns={resourceColumns}
+            rowKey="id"
             pagination={false}
           />
-        ) : (
-          <p>No usage details available.</p>
-        )}
-      </Modal>
+        </TabPane>
+        <TabPane tab="Tickets" key="3">
+          <Button
+            type="primary"
+            onClick={() => {
+              setSelectedTicket({
+                id: `${Date.now()}`,
+                title: "",
+                description: "",
+                className: "",
+                completed: false,
+                color: "#d0021b",
+              });
+              setIsTicketModalVisible(true);
+            }}
+          >
+            Raise Ticket
+          </Button>
+          <Table
+            dataSource={tickets}
+            columns={ticketColumns}
+            rowKey="id"
+            pagination={false}
+            style={{ marginTop: 16 }}
+          />
+          <Modal
+            title="Ticket Details"
+            visible={isTicketModalVisible}
+            onOk={handleTicketOk}
+            onCancel={handleTicketCancel}
+          >
+            <Form
+              layout="vertical"
+              initialValues={selectedTicket}
+              onValuesChange={handleTicketChange}
+            >
+              <Form.Item label="Ticket Title" name="title">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Description" name="description">
+                <Input.TextArea />
+              </Form.Item>
+              <Form.Item label="Class Name" name="className">
+                <Input />
+              </Form.Item>
+              <Form.Item label="Completed" name="completed">
+                <Checkbox />
+              </Form.Item>
+              <Form.Item label="Ticket Color" name="color">
+                <Input type="color" />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

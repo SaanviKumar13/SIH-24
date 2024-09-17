@@ -95,7 +95,7 @@ export default function Sidebar() {
               href="/"
               className="text-2xl text-center font-bold text-primary md:text-4xl"
             >
-              SIH&apos;24
+              SCMS
             </Link>
           ) : (
             <button
@@ -142,7 +142,7 @@ export default function Sidebar() {
         {isOpen && (
           <div className="absolute bottom-4 w-full px-4 md:px-6 flex flex-col space-y-4">
             <a
-              href="#"
+              href="/student"
               className="flex items-center space-x-2 text-white hover:text-secondary"
             >
               <UserCircle2Icon
